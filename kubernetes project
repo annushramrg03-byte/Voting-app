@@ -1,0 +1,152 @@
+1.	Create a instance t3.micro and install
+2.	Install Kubect:
+
+curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.11/2023-03-17/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+
+sudo cp ./kubectl /usr/local/bin
+
+export PATH=/usr/local/bin:$PATH\
+
+3.	Install AWScli:
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+unzip awscliv2.zip
+
+sudo ./aws/install
+
+4.
+AmazonEKS_CNI_Policy
+AmazonEKSWorkerNodePolicy
+AmazonEC2ContainerRegistryReadOnly
+
+
+
+
+
+
+
+ 
+
+
+
+ 
+
+
+ 
+ 
+ 
+ 
+ 
+  
+
+
+ 
+   
+
+ 
+  
+  
+
+ 
+ 
+aws eks update-kubeconfig --name EKS_CLUSTER_NAME --region us-west-2
+
+kubectl get nodes
+
+ 
+kubectl edit configmap aws-auth -namespace kube-system
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Nodes must be in ready status
+  
+
+Install git:
+sudo yum install git -y
+
+Clone the repo:
+git clone https://github.com/N4si/K8s-voting-app.git
+
+ 
+
+kubectl create ns cloudchamp
+kubectl config set-context --current --namespace cloudchamp
+ 
+aa 
+A
+Run this cat command:
+
+cat << EOF | kubectl exec -it mongo-0 -- mongo
+rs.initiate();
+sleep(2000);
+rs.add("mongo-1.mongo:27017");
+sleep(2000);
+rs.add("mongo-2.mongo:27017");
+sleep(2000);
+cfg = rs.conf();
+cfg.members[0].host = "mongo-0.mongo:27017";
+rs.reconfig(cfg, {force: true});
+sleep(5000);
+EOF
+
+Run this :
+
+cat << EOF | kubectl exec -it mongo-0 -- mongo
+use langdb;
+db.languages.insert({"name" : "csharp", "codedetail" : { "usecase" : "system, web, server-side", "rank" : 5, "compiled" : false, "homepage" : "https://dotnet.microsoft.com/learn/csharp", "download" : "https://dotnet.microsoft.com/download/", "votes" : 0}});
+db.languages.insert({"name" : "python", "codedetail" : { "usecase" : "system, web, server-side", "rank" : 3, "script" : false, "homepage" : "https://www.python.org/", "download" : "https://www.python.org/downloads/", "votes" : 0}});
+db.languages.insert({"name" : "javascript", "codedetail" : { "usecase" : "web, client-side", "rank" : 7, "script" : false, "homepage" : "https://en.wikipedia.org/wiki/JavaScript", "download" : "n/a", "votes" : 0}});
+db.languages.insert({"name" : "go", "codedetail" : { "usecase" : "system, web, server-side", "rank" : 12, "compiled" : true, "homepage" : "https://golang.org", "download" : "https://golang.org/dl/", "votes" : 0}});
+db.languages.insert({"name" : "java", "codedetail" : { "usecase" : "system, web, server-side", "rank" : 1, "compiled" : true, "homepage" : "https://www.java.com/en/", "download" : "https://www.java.com/en/download/", "votes" : 0}});
+db.languages.insert({"name" : "nodejs", "codedetail" : { "usecase" : "system, web, server-side", "rank" : 20, "script" : false, "homepage" : "https://nodejs.org/en/", "download" : "https://nodejs.org/en/download/", "votes" : 0}});
+
+db.languages.find().pretty();
+EOF
+
+
+
+
+
+
+Run this :
+kubectl apply -f mongo-secret.yaml
+
+kubectl apply -f api-service.yaml
+A
+kubectl apply -f api-deployment.yaml
+
+ 
+
+nano api-service.yaml
+
+ 
+kubectl apply -f api-service.yaml
+
+nano frontend-service.yaml
+ 
+kubectl apply -f frontend-service.yaml
+
+kubectl get svc
+
+Now copy the external ip
+
+Open and paste there in value:
+nano frontend-deployment.yaml 
+
+kubectl apply -f frontend-deployment.yaml
+
+Run :
+kubectl rollout restart deployment frontend -n cloudchamp
+
+kubectl get svc
+Copy external ip of frontend and paste in browser
+ 
