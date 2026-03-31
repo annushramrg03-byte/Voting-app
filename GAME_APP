@@ -1,0 +1,83 @@
+1. Install tools
+sudo apt update -y
+sudo apt install -y curl unzip  
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/ 
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+________________________________________
+✅ 2. Configure AWS
+aws configure
+•	Region: ap-south-1 
+________________________________________
+✅ 3. Create EKS Cluster
+eksctl create cluster \
+--name game-cluster \
+--region ap-south-1 \
+--node-type t3.medium \
+--nodes 3
+________________________________________
+✅ 4. Verify Nodes
+kubectl get nodes
+________________________________________
+✅ 5. Create Deployment
+nano deployment.yaml 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-2048
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: game
+  template:
+    metadata:
+      labels:
+        app: game
+    spec:
+      containers:
+      - name: game
+        image: public.ecr.aws/l6m2t8p7/docker-2048:latest
+        ports:
+        - containerPort: 80
+________________________________________
+✅ 6. Create Service
+nano service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: game
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+________________________________________
+✅ 7. Deploy Application
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+________________________________________
+✅ 8. Check Pods
+kubectl get pods
+________________________________________
+✅ 9. Get External URL
+kubectl get svc
+________________________________________
+✅ 10. Open in Browser
+http://<EXTERNAL-IP>
+________________________________________
+🎮 OUTPUT
+👉 2048 game will open ✅
